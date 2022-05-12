@@ -42,6 +42,6 @@ for friend in friends:
 
 df = pd.DataFrame(friendslist, columns=['Name', 'Surname', 'Username'],
                   index=range(1, len(friendslist)+1))
-df.to_excel('friendslist2.xlsx')
+df.to_excel('friendslist.xlsx')
 
 driver.close()
