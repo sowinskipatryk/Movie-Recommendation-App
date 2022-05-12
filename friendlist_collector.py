@@ -27,7 +27,7 @@ page_html = driver.page_source
 
 soup = BeautifulSoup(page_html, 'html.parser')
 
-friendslist = []
+friends_list = []
 friend_section = soup.find('section', {'class': 'section__userFriends'})
 friends = friend_section.find_all('div', {'class': 'user__body'})
 for friend in friends:
@@ -38,10 +38,10 @@ for friend in friends:
     if surname:
         surname = friend.find('span', {'class': 'user__lastName'}).text
     username = friend.find('a')['href'][6:]
-    friendslist.append([name, surname, username])
+    friends_list.append([name, surname, username])
 
-df = pd.DataFrame(friendslist, columns=['Name', 'Surname', 'Username'],
-                  index=range(1, len(friendslist)+1))
-df.to_excel('friendslist.xlsx')
+df = pd.DataFrame(friends_list, columns=['Name', 'Surname', 'Username'],
+                  index=range(1, len(friends_list)+1))
+df.to_excel('friends_list.xlsx')
 
 driver.close()
