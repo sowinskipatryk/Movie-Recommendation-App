@@ -10,7 +10,6 @@ import time
 
 DRIVER_PATH = r'C:\Program Files\chromedriver.exe'
 
-USERNAME = os.environ['USERNAME']
 LOGIN = os.environ['LOGIN']
 PASSW = os.environ['PASSW']
 
@@ -21,11 +20,9 @@ option.add_experimental_option("prefs", {
     "profile.default_content_setting_values.notifications": 1
 })
 
-def login():
+def login(url):
     driver = webdriver.Chrome(DRIVER_PATH, options=option)
     driver.maximize_window()
-
-    url = f"https://www.filmweb.pl/user/{USERNAME}/friends"
 
     driver.get(url)
 
@@ -65,4 +62,4 @@ def login():
     passw.click()
     keyboard.write(PASSW)
     keyboard.press_and_release('enter')
-    return driver, url
+    return driver
