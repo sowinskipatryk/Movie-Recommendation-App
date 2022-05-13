@@ -22,7 +22,8 @@ driver = login('http://filmweb.pl')
 
 time.sleep(3)
 
-id = 0
+id = 0 # Change it to start scraping at certain index
+links = links[id:]
 for url in links:
     driver.get(url+"#votes")
 
@@ -45,8 +46,12 @@ for url in links:
 
     page_html = driver.page_source
     soup = BeautifulSoup(page_html, 'html.parser')
-    review_num = int(soup.find('div',
-                               {'class': 'ratingStats__users'})['data-total'])
+    rev = soup.find('div', {'class': 'ratingStats__users'})['data-total']
+    if not rev:
+        review_num = 0
+    else:
+        review_num = int(rev)
+
     for i in range(review_num // 4):
         keyboard.press_and_release('page down')
         time.sleep(1.5)
@@ -75,5 +80,5 @@ for url in links:
 
     print(f'Number of ratings scraped: {len(ratings)}')
 
-matrix.to_excel('ratings_matrix_entry.xlsx')
+matrix.to_excel('ratings_matrix.xlsx')
 driver.close()
