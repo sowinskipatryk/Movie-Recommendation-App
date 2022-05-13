@@ -71,14 +71,12 @@ for url in links:
                 rate = review.find('span', {'class': 'rate'}).text
                 matrix[username].at[1048] = rate
             except AttributeError:
-                print(f'No rating for username: {username}!')
+                pass
             finally:
                 f.write(f'{username} {rate}\n')
             ratings.append([username, rate])
 
     id += 1
-
-    print(f'Number of ratings scraped: {len(ratings)}')
 
 matrix.to_excel('ratings_matrix.xlsx')
 driver.close()
