@@ -10,11 +10,13 @@ import time
 from page_login import login
 
 movies = pd.read_excel('movieslist.xlsx', header=0)
-matrix = pd.read_excel('ratings_matrix_entry.xlsx', index_col="Movie Id",
-                       header=0)
+friends = pd.read_excel('friendslist.xlsx', header=0)
 
+usernames = friends['Username']
 movie_ids = movies['Movie Id']
 links = movies['Link']
+
+matrix = pd.DataFrame(index=movie_ids, columns=usernames)
 
 driver = login('http://filmweb.pl')
 
@@ -66,14 +68,12 @@ for url in links:
             except AttributeError:
                 print(f'No rating for username: {username}!')
             finally:
-                print(f'Username: {username}\nRating: {rate}\n')
                 f.write(f'{username} {rate}\n')
             ratings.append([username, rate])
 
     id += 1
 
-    print(f'Number of ratings: {len(ratings)}')
-    print(ratings)
+    print(f'Number of ratings scraped: {len(ratings)}')
 
 matrix.to_excel('ratings_matrix_entry.xlsx')
 driver.close()
