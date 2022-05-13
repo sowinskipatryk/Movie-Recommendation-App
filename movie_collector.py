@@ -1,6 +1,6 @@
-import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import requests
 
 urls = [f'https://www.filmweb.pl/ajax/ranking/film/{i}' for i in range(1,21)]
 
@@ -10,6 +10,7 @@ for url in urls:
     r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     items = soup.find_all('div', {'class': 'rankingType'})
+
     for item in items:
         title = item.find('h2').text
         link = 'https://www.filmweb.pl' + item.find('a')['href']
@@ -18,6 +19,7 @@ for url in urls:
         year = item.find('p', {'class':'rankingType__originalTitle'}).text[-4:]
         genre = item.find('div', {'class':'rankingType__genres'}).text[7:]
         movie_id = link.split('-')[-1]
+
         if not original_title:
             original_title = title
         movie = [title, original_title, genre, year, link, movie_id]
