@@ -1,7 +1,7 @@
 """
 This script uses one of memory based collaborative filtering techniques which
 is the Pearson correlation to calculate the similarity of people's taste when
-it comes to movies and give recommendations based on received results
+it comes to movies and give movie recommendations based on received results
 """
 
 import pandas as pd
@@ -28,10 +28,10 @@ df = df.reset_index()
 my_data = df[df['index'] == os.environ['LOGIN']]
 my_data = my_data.melt().dropna()[1:]
 
-# Erasing my data not to be messed up with friends data
+# Erase my data not to be messed up with friends data
 df = df[:-1]
 
-# List of movies I watched - basis for calculating the correlation
+# Create a list of movies I watched - basis for calculating the correlation
 my_movielist = my_data['Movie Id'].values.tolist()
 
 # Melt the DataFrame for convenience
@@ -41,31 +41,34 @@ friends_rates = df.melt(id_vars=['index']).dropna()
 friends_grouped = friends_rates.groupby(['index'])
 friends_rates_grouped = friends_rates.groupby(['Movie Id'])
 
-# Sorting friends by amount of movies watched
+# Sort friends by amount of movies watched
 friends_sorted = sorted(friends_grouped, key=lambda x: len(x[1]), reverse=True)
 
-# Creating a dictionary for results
+# Create a dictionary for results
 pearson_corr_dict = {}
 
-# Sorting values and iterating over the dataset of movies that friends watched
+# Sort values and iterating over the dataset of movies that friends watched
 my_rates = my_data.sort_values(by="Movie Id")
 for friend, data in friends_sorted:
     data = data.sort_values(by="Movie Id")
 
-    # Creating a DataFrame containing common movies
+    # Create a DataFrame containing my ratings of common movies
     my_common_movies = my_rates[my_rates['Movie Id'].isin(data['Movie Id']
                                                           .tolist())]
 
-    # Creating a list of movies that me and my friend watched
+    # Create a list of movies that me and my friend watched
     my_common_movies_list = my_common_movies['Movie Id'].tolist()
 
+    # Create a DataFrame containing friend's ratings of common movies
     friends_common_movies = data[data['Movie Id'].isin(my_common_movies_list)]
 
+    # Create a list of rates that my friend gave
     friends_common_movies_list = my_common_movies['value'].tolist()
 
+    # Number of common movies
     common_movies_num = len(my_common_movies['value'].tolist())
 
-    # Setting the minimum number of common movies for correlation to be precise
+    # Set the minimum number of common movies for correlation to be precise
     # Minimum value for the function to work is 2
     min_common_movies = 5
     if common_movies_num > min_common_movies:
@@ -73,12 +76,50 @@ for friend, data in friends_sorted:
     else:
         corr = 0
 
+    # Add results to a dictionary
     pearson_corr_dict[friend] = corr
 
+# Create a DataFrame for correlation data
 pearson_corr_df = pd.DataFrame.from_dict(pearson_corr_dict, orient='index')
 pearson_corr_df.columns = ['correlation']
 pearson_corr_df['friend'] = pearson_corr_df.index
 pearson_corr_df.index = range(len(pearson_corr_df))
 
+# Sort values from highest to lowest correlation
 pearson_corr_df_sorted = pearson_corr_df.sort_values(by='correlation',
                                                      ascending=False)
+
+# Merge DataFrames
+merged_corr_df = pearson_corr_df_sorted.merge(friends_rates, left_on='friend',
+                                  right_on='index', how='inner')
+
+# Calculate Weighted Rating
+merged_corr_df['weighted_rating'] = merged_corr_df['correlation'] * \
+                                    merged_corr_df['value']
+
+calc_df = merged_corr_df.groupby('Movie Id').sum()[['correlation',
+                                                    'weighted_rating']]
+
+calc_df.columns = ['correlation_sum', 'weighted_rating_sum']
+
+# Create recommendations DataFrame with calculated WARR - weighted average
+# recommendation rating
+
+recommendations = pd.DataFrame()
+recommendations['WARR'] = calc_df['weighted_rating_sum'] / \
+                          calc_df['correlation_sum']
+recommendations['Movie Id'] = calc_df.index
+recommendations = recommendations.sort_values(by='WARS', ascending=False)
+
+# Create a list for sorting purposes
+recommendation_list = recommendations['Movie Id'].tolist()
+
+# Load Excel file with movies data
+movies = pd.read_excel('./excel files/movieslist.xlsx', index_col='Movie Id',
+                       header=0)
+
+movies = movies.drop(columns=movies.columns[0])
+
+# Filter and show movie recommendations
+movie_recommendations = movies.loc[recommendation_list]
+print(movie_recommendations)
