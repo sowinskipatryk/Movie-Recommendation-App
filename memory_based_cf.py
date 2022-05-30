@@ -109,7 +109,7 @@ recommendations = pd.DataFrame()
 recommendations['WARR'] = calc_df['weighted_rating_sum'] / \
                           calc_df['correlation_sum']
 recommendations['Movie Id'] = calc_df.index
-recommendations = recommendations.sort_values(by='WARS', ascending=False)
+recommendations = recommendations.sort_values(by='WARR', ascending=False)
 
 # Create a list for sorting purposes
 recommendation_list = recommendations['Movie Id'].tolist()
@@ -120,6 +120,9 @@ movies = pd.read_excel('./excel files/movieslist.xlsx', index_col='Movie Id',
 
 movies = movies.drop(columns=movies.columns[0])
 
+# Erase movies I watched
+movies_unseen = list(set(recommendation_list) - set(my_movielist))
+
 # Filter and show movie recommendations
-movie_recommendations = movies.loc[recommendation_list]
+movie_recommendations = movies.loc[movies_unseen]
 print(movie_recommendations)
