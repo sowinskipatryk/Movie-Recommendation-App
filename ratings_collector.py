@@ -7,10 +7,10 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 import keyboard
 import pandas as pd
 import time
-from page_login import login
+from helper_funcions.page_login import login
 
-movies = pd.read_excel('movieslist.xlsx', header=0)
-friends = pd.read_excel('friendslist.xlsx', header=0)
+movies = pd.read_excel('./excel_files/movies.xlsx', header=0)
+friends = pd.read_excel('./excel_files/friends.xlsx', header=0)
 
 usernames = friends['Username']
 movie_ids = movies['Movie Id']
@@ -78,5 +78,5 @@ for url in links:
 
     id += 1
 
-matrix.to_excel('ratings_matrix.xlsx')
+matrix.to_excel('./excel_files/ratings_matrix.xlsx')
 driver.close()

@@ -2,7 +2,7 @@ import names
 import random
 import pandas as pd
 
-df = pd.read_excel('friendslist.xlsx', header=0, index_col=0)
+df = pd.read_excel('./excel_files/friends.xlsx', header=0, index_col=0)
 
 friends_num = df['Name'].shape[0]
 
@@ -13,4 +13,4 @@ for i in range(friends_num):
     df['Surname'].at[i+1] = surname
     df['Username'].at[i+1] = username
 
-df.to_excel('friendslist_randomized.xlsx')
+df.to_excel('./excel_files/friends_randomized.xlsx')

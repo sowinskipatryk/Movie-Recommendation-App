@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import os
 import pandas as pd
 import time
-from page_login import login
+from helper_functions.page_login import login
 
 USERNAME = os.environ['USERNAME']
 
@@ -48,6 +48,6 @@ for friend in friends:
 
 df = pd.DataFrame(friendslist, columns=['Name', 'Surname', 'Username'],
                   index=range(1, len(friendslist)+1))
-df.to_excel('friendslist.xlsx')
+df.to_excel('./excel_files/friends.xlsx')
 
 driver.close()

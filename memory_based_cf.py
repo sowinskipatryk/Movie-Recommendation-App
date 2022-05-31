@@ -11,7 +11,7 @@ from scipy.stats import pearsonr
 import os
 
 # Read Excel file containing data
-df = pd.read_excel('./excel files/ratings_matrix_no_nulls.xlsx',
+df = pd.read_excel('./excel files/ratings_matrix.xlsx',
                    index_col="Movie Id", header=0)
 
 # Transpose the DataFrame for convenience
@@ -119,7 +119,6 @@ calc_df.columns = ['correlation_sum', 'weighted_rating_sum']
 
 # Create recommendations DataFrame with calculated WARR - weighted average
 # recommendation rating
-
 recommendations = pd.DataFrame()
 recommendations['WARR'] = calc_df['weighted_rating_sum'] / \
                           calc_df['correlation_sum']
