@@ -93,6 +93,21 @@ pearson_corr_df_sorted = pearson_corr_df.sort_values(by='correlation',
 merged_corr_df = pearson_corr_df_sorted.merge(friends_rates, left_on='friend',
                                   right_on='index', how='inner')
 
+# Set the minimum number of rates needed for movie to be recommended
+# To avoid recommendations based on one friend with high similarity
+min_friends_rates = 3
+
+# Create a mask DataFrame with movies at least n friends watched
+min_sum_df = (merged_corr_df.groupby('Movie Id').count()['value'] >=
+              min_friends_rates).reset_index()
+
+# Create a list with movies at least n friends watched
+min_sum_df_list = min_sum_df[min_sum_df['value'] == True]['Movie Id'].tolist()
+
+# Overwrite the DataFrame with recommended movies with only the titles that
+# meet the criteria mentioned above
+merged_corr_df = merged_corr_df[merged_corr_df['Movie Id'].isin(min_sum_df_list)]
+
 # Calculate Weighted Rating
 merged_corr_df['weighted_rating'] = merged_corr_df['correlation'] * \
                                     merged_corr_df['value']
@@ -121,7 +136,8 @@ movies = pd.read_excel('./excel files/movieslist.xlsx', index_col='Movie Id',
 movies = movies.drop(columns=movies.columns[0])
 
 # Erase movies I watched
-movies_unseen = list(set(recommendation_list) - set(my_movielist))
+movies_unseen = [movie for movie in recommendation_list if movie not in
+                 my_movielist]
 
 # Filter and show movie recommendations
 movie_recommendations = movies.loc[movies_unseen]
