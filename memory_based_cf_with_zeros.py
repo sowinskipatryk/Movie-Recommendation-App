@@ -32,7 +32,7 @@ df = df.reset_index()
 df.fillna(0, inplace=True)
 
 # Extract the DataFrame with my ratings
-my_data = df[df['index'] == 'sowinskyy']
+my_data = df[df['index'] == os.environ['LOGIN']
 my_data = my_data.melt()[1:]
 
 # Erase the data with my ratings from df not to be messed up with friends data
