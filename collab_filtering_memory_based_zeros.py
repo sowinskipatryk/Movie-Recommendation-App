@@ -32,7 +32,7 @@ df = df.reset_index()
 df.fillna(0, inplace=True)
 
 # Extract the DataFrame with my ratings
-my_data = df[df['index'] == os.environ['LOGIN']
+my_data = df[df['index'] == os.environ['LOGIN']]
 my_data = my_data.melt()[1:]
 
 # Erase the data with my ratings from df not to be messed up with friends data
@@ -80,15 +80,21 @@ pearson_corr_df.columns = ['correlation']
 pearson_corr_df['friend'] = pearson_corr_df.index
 pearson_corr_df.index = range(len(pearson_corr_df))
 
+# Replace empty cells with zeros
+pearson_corr_df.fillna(0, inplace=True)
+
 # Sort values from highest to lowest correlation
 pearson_corr_df_sorted = pearson_corr_df.sort_values(by='correlation',
                                                      ascending=False)
 
-# Replace empty cells with zeros
-pearson_corr_df_sorted.fillna(0, inplace=True)
+# Print friends correlation
+# print(pearson_corr_df_sorted.to_string())
+
+# Drop rows with zeros (no rating)
+friends_rates_nozeros = friends_rates[friends_rates['value'] != 0]
 
 # Merge DataFrames
-merged_corr_df = pearson_corr_df_sorted.merge(friends_rates, left_on='friend',
+merged_corr_df = pearson_corr_df_sorted.merge(friends_rates_nozeros, left_on='friend',
                                   right_on='index', how='inner')
 
 # Set the minimum number of rates needed for movie to be recommended
@@ -139,6 +145,11 @@ movies_unseen_list = movies_unseen_df['Movie Id'].tolist()
 movies_unseen = [movie for movie in recommendation_list if movie in
                  movies_unseen_list]
 
-# Filter and show movie recommendations
+# Filter movie recommendations to only unseen movies
 movie_recommendations = movies.loc[movies_unseen]
-print(movie_recommendations)
+
+# Add weighted average recommendation rating to movie recommendations DataFrame
+movie_recommendations['WARR'] = recommendations['WARR']
+
+# Print recommended movie titles and their corresponding recommendation ratings
+print(movie_recommendations[['Title', 'WARR']].to_string())
