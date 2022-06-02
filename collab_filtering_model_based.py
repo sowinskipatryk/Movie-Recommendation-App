@@ -19,7 +19,7 @@ import os
 # reached, the iteration stops), alpha and beta coefficients
 latent_features_num = 3
 steps_num = 1000
-error_tolerance = 20000
+error_tolerance = 5000 # Pretty high - only for testing purposes
 alpha = 0.001
 beta = 0.01
 
