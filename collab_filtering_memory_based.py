@@ -129,7 +129,7 @@ recommendations = recommendations.sort_values(by='WARR', ascending=False)
 recommendation_list = recommendations['Movie Id'].tolist()
 
 # Load Excel file with movies data
-movies = pd.read_excel('./excel files/movieslist.xlsx', index_col='Movie Id',
+movies = pd.read_excel('./excel_files/movies.xlsx', index_col='Movie Id',
                        header=0)
 
 movies = movies.drop(columns=movies.columns[0])
