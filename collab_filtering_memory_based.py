@@ -11,7 +11,7 @@ from scipy.stats import pearsonr
 import os
 
 # Read Excel file containing data
-df = pd.read_excel('./excel files/ratings_matrix.xlsx',
+df = pd.read_excel('./excel_files/ratings_matrix.xlsx',
                    index_col="Movie Id", header=0)
 
 # Transpose the DataFrame for convenience
